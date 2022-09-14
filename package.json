@@ -18,11 +18,11 @@
     "winston": "^3.8.1"
   },
   "scripts": {
-    "tsc": "tsc",
+    "build": "tsc",
     "lint": "eslint --ext .ts",
     "dev": "nodemon src/index.ts",
-    "start:dev": "ts-node-dev src/index.ts",
-    "start": "node dist/"
+    "start:ts": "ts-node-dev src/index.ts",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
