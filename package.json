@@ -21,7 +21,8 @@
     "tsc": "tsc",
     "lint": "eslint --ext .ts",
     "dev": "nodemon src/index.ts",
-    "start:dev": "ts-node-dev src/index.ts"
+    "start:dev": "ts-node-dev src/index.ts",
+    "start": "node dist/"
   },
   "keywords": [],
   "author": "",
