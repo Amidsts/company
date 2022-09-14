@@ -9,13 +9,13 @@ import {
     getAdmin,
     removeAdmin,
     signInAdmin,
-    updateAbout,
     addImage,
     createContact,
     updateImage,
     deleteImage,
     getImage,
-    getImages
+    getImages,
+    getContacts
 } from "../services/adminService"
 import { expectationFailedError } from "../utils/errors"
 import { responseHandler } from "../utils/helpers"
@@ -104,17 +104,28 @@ export async function deleteabout (req: Request, res: Response, next: NextFuncti
         next(err)
     }
 }
-
+/*
 export async function updateabout (req, res: Response, next: NextFunction) {
     try{
 
-        const response = await updateAbout(req.params.aboutId, req.body)
+        if (!req.file) {
+            const response = await updateAbout(req.params.aboutId, req.body)
+            res.json(responseHandler(response))
+        } else if ( !req.body ) {
+            const response = await updateAbout(req.params.aboutId, req.files.img)
+            res.json(responseHandler(response))
+        }
+        
+        const response = await updateAbout(req.params.aboutId, req.body, req.files.img)
         res.json(responseHandler(response))
+
     } catch (err) {
         res.json(err)
         next(err)
     }
 }
+
+*/
 
 export async function getabout (req, res: Response, next: NextFunction) {
     try{
@@ -150,13 +161,13 @@ export async function addContact (req, res: Response, next: NextFunction) {
     }
 }
 
-export async function getContacts (req, res: Response, next: NextFunction) {
+export async function getcontacts (req, res: Response, next: NextFunction) {
     try{
 
-        const response = await getAbouts()
+        const response = await getContacts()
         res.json(responseHandler(response))
     } catch (err) {
-        res.json(err)
+        res.json(err) 
         next(err)
     }
 }
@@ -186,10 +197,10 @@ export async function addimage(req, res: Response, next: NextFunction) {
 
 export async function updateimage(req, res: Response, next: NextFunction) {
     try{
-        const response = await updateImage(req.params.imageId,req.files.img)
+        const response = await updateImage(req.params.imgId,req.files.img)
 
         res.json(responseHandler(response))
-    } catch (err) {
+    } catch (err) { 
         res.json(err)
         next(err)
     }

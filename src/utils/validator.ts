@@ -71,7 +71,7 @@ export const createAboutValidate = ( payload: {[key: string]: any} ) => {
     payload )
 }
 
-export const updateAboutValidate = ( payload: {[key: string]: any} ) => {
+export const updateAboutValidate = ( payload: {[key: string]: any} | undefined ) => {
     return validate( Joi.object({
         title: Joi.string().trim(),
         description: Joi.string().trim()

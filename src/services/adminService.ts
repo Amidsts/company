@@ -259,7 +259,7 @@ export async function deleteAbout(id: string) {
 }
 
 //update about
-export async function updateAbout(id:string, payload: {[key: string]: string}, imgFile?: UploadedFile) {
+/**export async function updateAbout(id:string, payload?: {[key: string]: string}, imgFile?: UploadedFile) {
 
     const {
         title, 
@@ -308,6 +308,8 @@ export async function updateAbout(id:string, payload: {[key: string]: string}, i
        }
 }
 
+*/
+
 //get about
 
 export async function getAbout(id: string) {
@@ -339,6 +341,7 @@ export async function createContact(payload: {[key: string]: string}) {
     } = createContactValidate(payload)
 
    try{
+    console.log("addreaa")
         return await new Contact({
             address,
             email,
@@ -379,6 +382,7 @@ export async function deleteContact (id) {
 //gallery
 export async function addImage (imgFile: UploadedFile) {
     try {
+        console.log("good") 
         const image = await v2.uploader.upload(imgFile.tempFilePath)
         
         return await new Gallery({

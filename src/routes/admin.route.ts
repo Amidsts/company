@@ -7,12 +7,11 @@ import {
     GetAdmin,
     addAbout,
     deleteabout,
-    updateabout,
     getabout,
     getabouts,
     addimage,
     addContact,
-    getContacts,
+    getcontacts,
     updateimage,
     removeImage,
     getimage,
@@ -28,8 +27,8 @@ router.post("/signInAdmin", signinAdmin)
 router.get("/about/:aboutId", getabout)
 router.get("/abouts", getabouts)
 router.post("/contact", addContact)
-router.get("/getimage", getimage)
-router.get("getimages", getimages)
+router.get("/getimage/:imgId", getimage)
+router.get("/getimages", getimages)
 
 //superAdmin access route
 router.post("/signUpAdmin", authSuperAdmin, signUpAdmin)
@@ -39,11 +38,10 @@ router.get("/getAdmin/:Id", authSuperAdmin, GetAdmin)
 //admin access route
 router.post("/about", authAdmin, addAbout)
 router.delete("/removeAbout/:Id", authAdmin, deleteabout) 
-router.put("/updateabout/:aboutId", authAdmin, updateabout) 
-router.get("/getContacts", authAdmin, getContacts)
+router.get("/getContacts", authAdmin, getcontacts)
 router.post("/image", authAdmin, addimage)
-router.put("/updateImage/:imageId", authAdmin, updateimage)
-router.delete("/deleteImage", authAdmin, removeImage)
+router.put("/updateImage/:imgId", authAdmin, updateimage)
+router.delete("/deleteImage/:imgId", authAdmin, removeImage)
 
 
 export default router 
