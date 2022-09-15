@@ -15,7 +15,11 @@ import {
     deleteImage,
     getImage,
     getImages,
-    getContacts
+    getContacts,
+    forgotPasswordVerificationCode,
+    resendpasswordverificationCode,
+    enterPasswordVerificationCode,
+    resetPassword
 } from "../services/adminService"
 import { expectationFailedError } from "../utils/errors"
 import { responseHandler } from "../utils/helpers"
@@ -231,6 +235,50 @@ export async function getimage(req, res: Response, next: NextFunction) {
 export async function getimages(req, res: Response, next: NextFunction) {
     try{
         const response = await getImages()
+
+        res.json(responseHandler(response))
+    } catch (err) {
+        res.json(err)
+        next(err)
+    }
+}
+
+export async function forgotPasssword(req, res: Response, next: NextFunction) {
+    try{
+        const response = await forgotPasswordVerificationCode(req.body)
+
+        res.json(responseHandler(response))
+    } catch (err) {
+        res.json(err)
+        next(err)
+    }
+}
+
+export async function resendPasswordVerificationCode(req, res: Response, next: NextFunction) {
+    try{
+        const response = await resendpasswordverificationCode()
+
+        res.json(responseHandler(response))
+    } catch (err) {
+        res.json(err)
+        next(err)
+    }
+}
+
+export async function enterpasswordverificationCode(req, res: Response, next: NextFunction) {
+    try{
+        const response = await enterPasswordVerificationCode(req.body)
+
+        res.json(responseHandler(response))
+    } catch (err) {
+        res.json(err)
+        next(err)
+    }
+}
+
+export async function resetpassword(req, res: Response, next: NextFunction) {
+    try{
+        const response = await resetPassword(req.body)
 
         res.json(responseHandler(response))
     } catch (err) {

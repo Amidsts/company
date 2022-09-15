@@ -81,3 +81,14 @@ export const cloudinary = (_req, _res, next: NextFunction) => {
     })
     next()
 }
+
+export function generateVerificationCode () {
+    let code = "abcdefghijl012345mnoprstuvwxyzOPRSTUVWXYZ6789ABCDEFGHIJKLMN"
+    let str = ""
+    for (let i = 0; i < 6; i++) {
+        str += code[ Math.floor( Math.random() * code.length ) ]
+    }
+
+    return str
+}
+

@@ -15,7 +15,11 @@ import {
     updateimage,
     removeImage,
     getimage,
-    getimages
+    getimages,
+    forgotPasssword,
+    resendPasswordVerificationCode,
+    enterpasswordverificationCode,
+    resetpassword
 } from "../controller/adminController"
 import { authSuperAdmin, authAdmin } from "../middlewares/access"
 
@@ -24,8 +28,12 @@ const router = Router()
  
 //unprotected route 
 router.post("/signInAdmin", signinAdmin)
-router.get("/about/:aboutId", getabout)
-router.get("/abouts", getabouts)
+router.post("/forgotpassword",forgotPasssword)
+router.post("/resendPasswordverificationCode", resendPasswordVerificationCode)
+router.post("passwordVerificationCode", enterpasswordverificationCode)
+router.post("resetPassword", resetpassword)
+router.get("/about/:aboutId", getabout) 
+router.get("/abouts", getabouts) 
 router.post("/contact", addContact)
 router.get("/getimage/:imgId", getimage)
 router.get("/getimages", getimages)

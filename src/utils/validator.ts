@@ -103,3 +103,26 @@ export const createCarouseltValidate = ( payload: {[key: string]: any}[] ) => {
         })
     ), payload)
 }
+
+
+//forgot password verification
+export const forgotpasswordVerificatonValidate = ( payload: {[key: string]: any} ) => {
+    return validate( Joi.object({
+        email: Joi.string().trim(),
+        code: Joi.string().length(6)
+
+    }),
+
+    payload)
+}
+
+export const resetpasswordValidate = ( payload: {[key: string]: any} ) => {
+    return validate( Joi.object({
+        email: Joi.string().trim().required(),
+        code: Joi.string().length(6).required(),
+        password: Joi.string().trim().required(),
+        repeatPassword: Joi.ref('password')
+    }),
+
+    payload)
+}

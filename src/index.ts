@@ -10,6 +10,7 @@ import { PORT, DBURL } from "./utils/config"
 import adminRoutes from "./routes/admin.route"
 import { SEEDNOW } from "./utils/seed"
 import { cloudinary } from "./utils/helpers"
+import {connectRedis} from "./utils/redis"
 
 const app = express()
 
@@ -17,12 +18,14 @@ connect(DBURL, {
     useUnifiedTopology: true,
     useNewUrlParser: true
 }).then( () => {
-    console.log( "connected to database successfully" )
+    console.log("connected to database successfully")
     SEEDNOW()
 })
 .catch( (err) => {
     console.log(err)
 })
+
+connectRedis() 
 
 app.use( cors() ) // allow server(e.g nodeJs), communicate with the client 
     .use( morgan("tiny") )//log info about every http request
@@ -34,6 +37,8 @@ app.use( cors() ) // allow server(e.g nodeJs), communicate with the client
         tempFileDir: path.join(__dirname, "/uploads")
     }) )
     .use( "*", cloudinary )
+
+    
 
 app.use("/vi/api", adminRoutes)
    

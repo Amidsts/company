@@ -4,7 +4,7 @@ import {UploadResponseCallback, v2} from "cloudinary"
 import Admin, { IAdmin } from "../models/admin.model"
 import AccessAdmin from "../models/accessModel/adminaccess.model"
 import { authorizationError, badRequestError, expectationFailedError, notFoundError } from "../utils/errors"
-import { checkHash, generateToken, hashPassword } from "../utils/helpers"
+import { checkHash, generateToken, generateVerificationCode, hashPassword } from "../utils/helpers"
 import {
     signUpAdminValidate,
     signInAdminValidate,
@@ -14,13 +14,16 @@ import {
     createAboutValidate,
     updateAboutValidate,
     createContactValidate,
-    createCarouseltValidate
+    createCarouseltValidate,
+    forgotpasswordVerificatonValidate,
+    resetpasswordValidate
 } from "../utils/validator"
 import Menu from "../models/menu.model"
 import About from "../models/about.model"
 import Contact from "../models/contacts.model"
 import Gallery, { IGallery } from "../models/gallery.model"
 import Carousel from "../models/carousel.model"
+import { SETEX, GET } from "../utils/redis"
 
 
 //admin
@@ -131,6 +134,74 @@ export async function getAdmin (id: string) {
     if (!admin) throw new notFoundError("admin account is not found")
 
     return admin
+}
+
+//forgot password
+export async function forgotPasswordVerificationCode (payload: { [key: string]: any }) {
+    try {
+        const {email} = forgotpasswordVerificatonValidate(payload)
+
+        const AdminExist = await Admin.findOne({ email: email})
+
+         if(!AdminExist) throw new notFoundError("admin account does not exist")
+
+        const verificationCode = generateVerificationCode()
+
+        await SETEX(`adminVerificationCode_${verificationCode}`, verificationCode)
+
+        return verificationCode
+    } catch(error) {
+        return error
+    }
+    
+}
+
+export async function resendpasswordverificationCode () {
+    try{
+        const verificationCode = generateVerificationCode()
+
+        await SETEX(`adminVerificationCode_${verificationCode}`, verificationCode)
+
+        return verificationCode
+    } catch(error) {
+        return error
+    }
+}
+
+export async function enterPasswordVerificationCode (payload: {[key: string]: any}) {
+    try {
+        const {code} = forgotpasswordVerificatonValidate(payload)
+
+        const getCode = await GET(`adminVerificationCode_${code}`) 
+
+        if ( !getCode ) throw new notFoundError("verification code is incorrect")
+
+        return "code validated"
+    } catch(error) {
+        return error
+    }
+}
+
+//reset password
+export async function resetPassword (payload: {[key: string]: any}) {
+    try {
+        const { code, email, password, repeatPassword } = resetpasswordValidate(payload)
+
+        const admin = await Admin.findOne({email})
+        if (!admin) throw new notFoundError("admin account not found")
+
+        let adminAccess = await AccessAdmin.findOne({adminId: admin._id})
+
+        if (!adminAccess) throw new notFoundError("admin account not found")
+
+        console.log(repeatPassword)
+        adminAccess.password = hashPassword(repeatPassword )
+
+        adminAccess.save()
+        
+    } catch(error) {
+        return error
+    }
 }
 
 //add menu
