@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cloudinary = exports.verifyToken = exports.generateToken = exports.checkHash = exports.hashPassword = exports.validate = exports.responseHandler = void 0;
+exports.printDate = exports.generateVerificationCode = exports.cloudinary = exports.verifyToken = exports.generateToken = exports.checkHash = exports.hashPassword = exports.validate = exports.responseHandler = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = require("jsonwebtoken");
 const cloudinary_1 = require("cloudinary");
@@ -63,3 +63,18 @@ const cloudinary = (_req, _res, next) => {
     next();
 };
 exports.cloudinary = cloudinary;
+function generateVerificationCode() {
+    let code = "abcdefghijl012345mnoprstuvwxyzOPRSTUVWXYZ6789ABCDEFGHIJKLMN";
+    let str = "";
+    for (let i = 0; i < 6; i++) {
+        str += code[Math.floor(Math.random() * code.length)];
+    }
+    return str;
+}
+exports.generateVerificationCode = generateVerificationCode;
+function printDate() {
+    let month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let date = new Date();
+    return `${month[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`;
+}
+exports.printDate = printDate;

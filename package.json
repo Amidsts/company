@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint --ext .ts",
-    "dev": "nodemon src/index.ts",
+    "start:dev": "nodemon src/index.ts",
     "start:ts": "ts-node-dev src/index.ts",
     "start": "node dist/index.js"
   },

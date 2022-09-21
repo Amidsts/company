@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getimages = exports.getimage = exports.removeImage = exports.updateimage = exports.addimage = exports.getcontacts = exports.addContact = exports.getabouts = exports.getabout = exports.deleteabout = exports.addAbout = exports.GetAdmin = exports.deleteAdmin = exports.signinAdmin = exports.signUpAdmin = void 0;
+exports.resetpassword = exports.enterpasswordverificationCode = exports.resendPasswordVerificationCode = exports.forgotPasssword = exports.getimages = exports.getimage = exports.removeImage = exports.updateimage = exports.addimage = exports.getcontacts = exports.addContact = exports.getabouts = exports.getabout = exports.updateabout = exports.deleteabout = exports.addAbout = exports.GetAdmin = exports.deleteAdmin = exports.signinAdmin = exports.signUpAdmin = void 0;
 const adminService_1 = require("../services/adminService");
 const errors_1 = require("../utils/errors");
 const helpers_1 = require("../utils/helpers");
@@ -93,7 +93,7 @@ exports.addAbout = addAbout;
 function deleteabout(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield (0, adminService_1.deleteAbout)(req.params.Id);
+            const response = yield (0, adminService_1.deleteAbout)(req.params.Id, req.query.aboutType);
             res.json((0, helpers_1.responseHandler)(response));
         }
         catch (err) {
@@ -103,32 +103,31 @@ function deleteabout(req, res, next) {
     });
 }
 exports.deleteabout = deleteabout;
-/*
-export async function updateabout (req, res: Response, next: NextFunction) {
-    try{
-
-        if (!req.file) {
-            const response = await updateAbout(req.params.aboutId, req.body)
-            res.json(responseHandler(response))
-        } else if ( !req.body ) {
-            const response = await updateAbout(req.params.aboutId, req.files.img)
-            res.json(responseHandler(response))
+function updateabout(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!req.file) {
+                const response = yield (0, adminService_1.updateAbout)(req.params.aboutId, req.body);
+                res.json((0, helpers_1.responseHandler)(response));
+            }
+            else if (!req.body) {
+                const response = yield (0, adminService_1.updateAbout)(req.params.aboutId, undefined, req.files.img);
+                res.json((0, helpers_1.responseHandler)(response));
+            }
+            const response = yield (0, adminService_1.updateAbout)(req.params.aboutId, req.body, req.files.img);
+            res.json((0, helpers_1.responseHandler)(response));
         }
-        
-        const response = await updateAbout(req.params.aboutId, req.body, req.files.img)
-        res.json(responseHandler(response))
-
-    } catch (err) {
-        res.json(err)
-        next(err)
-    }
+        catch (err) {
+            res.json(err);
+            next(err);
+        }
+    });
 }
-
-*/
+exports.updateabout = updateabout;
 function getabout(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield (0, adminService_1.getAbout)(req.params.aboutId);
+            const response = yield (0, adminService_1.getAbout)(req.params.aboutId, req.query.aboutType);
             res.json((0, helpers_1.responseHandler)(response));
         }
         catch (err) {
@@ -141,7 +140,7 @@ exports.getabout = getabout;
 function getabouts(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield (0, adminService_1.getAbouts)();
+            const response = yield (0, adminService_1.getAbouts)(req.query.aboutType);
             res.json((0, helpers_1.responseHandler)(response));
         }
         catch (err) {
@@ -191,7 +190,7 @@ exports.getcontacts = getcontacts;
 function addimage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield (0, adminService_1.addImage)(req.files.img);
+            const response = yield (0, adminService_1.addImage)(req.files.img, req.body);
             res.json((0, helpers_1.responseHandler)(response));
         }
         catch (err) {
@@ -204,7 +203,7 @@ exports.addimage = addimage;
 function updateimage(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const response = yield (0, adminService_1.updateImage)(req.params.imgId, req.files.img);
+            const response = yield (0, adminService_1.updateImage)(req.params.imgId, req.files.img, req.body);
             res.json((0, helpers_1.responseHandler)(response));
         }
         catch (err) {
@@ -253,3 +252,55 @@ function getimages(req, res, next) {
     });
 }
 exports.getimages = getimages;
+function forgotPasssword(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield (0, adminService_1.forgotPasswordVerificationCode)(req.body);
+            res.json((0, helpers_1.responseHandler)(response));
+        }
+        catch (err) {
+            res.json(err);
+            next(err);
+        }
+    });
+}
+exports.forgotPasssword = forgotPasssword;
+function resendPasswordVerificationCode(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield (0, adminService_1.resendpasswordverificationCode)();
+            res.json((0, helpers_1.responseHandler)(response));
+        }
+        catch (err) {
+            res.json(err);
+            next(err);
+        }
+    });
+}
+exports.resendPasswordVerificationCode = resendPasswordVerificationCode;
+function enterpasswordverificationCode(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield (0, adminService_1.enterPasswordVerificationCode)(req.body);
+            res.json((0, helpers_1.responseHandler)(response));
+        }
+        catch (err) {
+            res.json(err);
+            next(err);
+        }
+    });
+}
+exports.enterpasswordverificationCode = enterpasswordverificationCode;
+function resetpassword(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const response = yield (0, adminService_1.resetPassword)(req.body);
+            res.json((0, helpers_1.responseHandler)(response));
+        }
+        catch (err) {
+            res.json(err);
+            next(err);
+        }
+    });
+}
+exports.resetpassword = resetpassword;

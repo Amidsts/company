@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCarouseltValidate = exports.createContactValidate = exports.updateAboutValidate = exports.createAboutValidate = exports.updateMenuValidate = exports.menuValidate = exports.updateAdminDetailsValidate = exports.signInAdminValidate = exports.signUpAdminValidate = void 0;
+exports.updateImageValidate = exports.addImageValidate = exports.resetpasswordValidate = exports.forgotpasswordVerificatonValidate = exports.createCarouseltValidate = exports.createContactValidate = exports.updateAboutValidate = exports.createAboutValidate = exports.updateMenuValidate = exports.menuValidate = exports.updateAdminDetailsValidate = exports.signInAdminValidate = exports.signUpAdminValidate = void 0;
 const joi_1 = __importDefault(require("joi"));
 const helpers_1 = require("./helpers");
 /*firstname: only letters, convert first letter to capital letter, no white space
@@ -64,14 +64,16 @@ exports.updateMenuValidate = updateMenuValidate;
 const createAboutValidate = (payload) => {
     return (0, helpers_1.validate)(joi_1.default.object({
         title: joi_1.default.string().trim().required(),
-        description: joi_1.default.string().trim().required()
+        description: joi_1.default.string().trim().required(),
+        Type: joi_1.default.string().valid("carousel", "about", "news").required()
     }), payload);
 };
 exports.createAboutValidate = createAboutValidate;
 const updateAboutValidate = (payload) => {
     return (0, helpers_1.validate)(joi_1.default.object({
         title: joi_1.default.string().trim(),
-        description: joi_1.default.string().trim()
+        description: joi_1.default.string().trim(),
+        Type: joi_1.default.string().valid("carousel", "about", "news")
     }), payload);
 };
 exports.updateAboutValidate = updateAboutValidate;
@@ -95,3 +97,35 @@ const createCarouseltValidate = (payload) => {
     })), payload);
 };
 exports.createCarouseltValidate = createCarouseltValidate;
+//forgot password verification
+const forgotpasswordVerificatonValidate = (payload) => {
+    return (0, helpers_1.validate)(joi_1.default.object({
+        email: joi_1.default.string().trim(),
+        code: joi_1.default.string().length(6)
+    }), payload);
+};
+exports.forgotpasswordVerificatonValidate = forgotpasswordVerificatonValidate;
+const resetpasswordValidate = (payload) => {
+    return (0, helpers_1.validate)(joi_1.default.object({
+        email: joi_1.default.string().trim().required(),
+        code: joi_1.default.string().length(6).required(),
+        password: joi_1.default.string().trim().required(),
+        repeatPassword: joi_1.default.ref('password')
+    }), payload);
+};
+exports.resetpasswordValidate = resetpasswordValidate;
+//gallery
+const addImageValidate = (payload) => {
+    return (0, helpers_1.validate)(joi_1.default.object({
+        name: joi_1.default.string().trim().required(),
+        title: joi_1.default.string().trim().required()
+    }), payload);
+};
+exports.addImageValidate = addImageValidate;
+const updateImageValidate = (payload) => {
+    return (0, helpers_1.validate)(joi_1.default.object({
+        name: joi_1.default.string().trim(),
+        title: joi_1.default.string().trim()
+    }), payload);
+};
+exports.updateImageValidate = updateImageValidate;

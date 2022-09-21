@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CLOUDINARY_API_SECRET = exports.CLOUDINARY_API_KEY = exports.CLOUDINARY_NAME = exports.JWT_SECRET = exports.SEED_USER_PHONE = exports.SEED_USER_EMAIL = exports.SEED_USER_ROLE = exports.SEED_USER_PASSWORD = exports.SEED_USER_LASTNAME = exports.SEED_USER_FIRSTNAME = exports.DBURL = exports.PORT = void 0;
+exports.CLOUDINARY_API_SECRET = exports.CLOUDINARY_API_KEY = exports.CLOUDINARY_NAME = exports.JWT_SECRET = exports.SEED_USER_PHONE = exports.SEED_USER_EMAIL = exports.SEED_USER_ROLE = exports.SEED_USER_PASSWORD = exports.SEED_USER_LASTNAME = exports.SEED_USER_FIRSTNAME = exports.DB_URI = exports.DBURI = exports.PORT = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const { env } = process;
 exports.PORT = env.PORT || 6000;
-exports.DBURL = env.dburl || "";
+exports.DBURI = env.dburi || "";
+exports.DB_URI = env.db_uri || "";
 exports.SEED_USER_FIRSTNAME = env.seed_user_firstname || "";
 exports.SEED_USER_LASTNAME = env.seed_user_lastname || "";
 exports.SEED_USER_PASSWORD = env.seed_user_password || "";

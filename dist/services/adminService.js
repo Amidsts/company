@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCarousel = exports.getImages = exports.getImage = exports.deleteImage = exports.updateImage = exports.addImage = exports.deleteContact = exports.getContact = exports.getContacts = exports.createContact = exports.getAbouts = exports.getAbout = exports.deleteAbout = exports.createAbout = exports.updateMenu = exports.getMenu = exports.removeMenu = exports.addProduct = exports.getAdmin = exports.removeAdmin = exports.signInAdmin = exports.createAdmin = void 0;
+exports.createCarousel = exports.getImages = exports.getImage = exports.deleteImage = exports.updateImage = exports.addImage = exports.deleteContact = exports.getContact = exports.getContacts = exports.createContact = exports.getAbouts = exports.getAbout = exports.updateAbout = exports.deleteAbout = exports.createAbout = exports.updateMenu = exports.getMenu = exports.removeMenu = exports.addProduct = exports.resetPassword = exports.enterPasswordVerificationCode = exports.resendpasswordverificationCode = exports.forgotPasswordVerificationCode = exports.getAdmin = exports.removeAdmin = exports.signInAdmin = exports.createAdmin = void 0;
 const cloudinary_1 = require("cloudinary");
 const admin_model_1 = __importDefault(require("../models/admin.model"));
 const adminaccess_model_1 = __importDefault(require("../models/accessModel/adminaccess.model"));
@@ -24,6 +24,7 @@ const about_model_1 = __importDefault(require("../models/about.model"));
 const contacts_model_1 = __importDefault(require("../models/contacts.model"));
 const gallery_model_1 = __importDefault(require("../models/gallery.model"));
 const carousel_model_1 = __importDefault(require("../models/carousel.model"));
+const redis_1 = require("../utils/redis");
 //admin
 //add admin
 function createAdmin(payload) {
@@ -113,6 +114,77 @@ function getAdmin(id) {
     });
 }
 exports.getAdmin = getAdmin;
+//forgot password
+function forgotPasswordVerificationCode(payload) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { email } = (0, validator_1.forgotpasswordVerificatonValidate)(payload);
+            const AdminExist = yield admin_model_1.default.findOne({ email: email });
+            if (!AdminExist)
+                throw new errors_1.notFoundError("admin account does not exist");
+            const verificationCode = (0, helpers_1.generateVerificationCode)();
+            yield (0, redis_1.SETEX)(`adminVerificationCode_${verificationCode}`, verificationCode);
+            return {
+                "verificationCode": verificationCode
+            };
+        }
+        catch (error) {
+            return error;
+        }
+    });
+}
+exports.forgotPasswordVerificationCode = forgotPasswordVerificationCode;
+function resendpasswordverificationCode() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const verificationCode = (0, helpers_1.generateVerificationCode)();
+            yield (0, redis_1.SETEX)(`adminVerificationCode_${verificationCode}`, verificationCode);
+            return {
+                "verificationCode": verificationCode
+            };
+        }
+        catch (error) {
+            return error;
+        }
+    });
+}
+exports.resendpasswordverificationCode = resendpasswordverificationCode;
+function enterPasswordVerificationCode(payload) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { code } = (0, validator_1.forgotpasswordVerificatonValidate)(payload);
+            const getCode = yield (0, redis_1.GET)(`adminVerificationCode_${code}`);
+            if (!getCode)
+                throw new errors_1.notFoundError("verification code is incorrect");
+            return "code validated";
+        }
+        catch (error) {
+            return error;
+        }
+    });
+}
+exports.enterPasswordVerificationCode = enterPasswordVerificationCode;
+//reset password
+function resetPassword(payload) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { code, email, password, repeatPassword } = (0, validator_1.resetpasswordValidate)(payload);
+            const admin = yield admin_model_1.default.findOne({ email });
+            if (!admin)
+                throw new errors_1.notFoundError("admin account not found");
+            let adminAccess = yield adminaccess_model_1.default.findOne({ adminId: admin._id });
+            if (!adminAccess)
+                throw new errors_1.notFoundError("admin account not found");
+            console.log(repeatPassword);
+            adminAccess.password = (0, helpers_1.hashPassword)(repeatPassword);
+            adminAccess.save();
+        }
+        catch (error) {
+            return error;
+        }
+    });
+}
+exports.resetPassword = resetPassword;
 //add menu
 function addProduct(imageFile, payload) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -186,7 +258,8 @@ exports.updateMenu = updateMenu;
 //create About
 function createAbout(payload, imgfile) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { title, description } = (0, validator_1.createAboutValidate)(payload);
+        const { title, description, Type } = (0, validator_1.createAboutValidate)(payload);
+        console.log((0, helpers_1.printDate)());
         try {
             const img = yield cloudinary_1.v2.uploader.upload(imgfile.tempFilePath);
             if (!img)
@@ -197,7 +270,9 @@ function createAbout(payload, imgfile) {
                 image: {
                     imageUrl: (yield img).secure_url,
                     imageId: (yield img).public_id
-                }
+                },
+                Type: Type,
+                date: (0, helpers_1.printDate)()
             }).save();
         }
         catch (error) {
@@ -207,10 +282,10 @@ function createAbout(payload, imgfile) {
 }
 exports.createAbout = createAbout;
 //delete about
-function deleteAbout(id) {
+function deleteAbout(id, type) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const about = yield about_model_1.default.findById({ _id: id });
+            const about = yield about_model_1.default.findOne({ _id: id, Type: type });
             if (!about)
                 throw new errors_1.notFoundError("about not found");
             yield cloudinary_1.v2.uploader.destroy(about.image.imageId);
@@ -226,61 +301,51 @@ function deleteAbout(id) {
 }
 exports.deleteAbout = deleteAbout;
 //update about
-/**export async function updateAbout(id:string, payload?: {[key: string]: string}, imgFile?: UploadedFile) {
-
-    const {
-        title,
-        description
-    } = updateAboutValidate(payload)
-    try {
-        const about = await About.findById(id)
-    
-        if (!about) throw new notFoundError("about not found")
-
-        console.log(title)
-    
-        if (imgFile) {
-            await v2.uploader.destroy(about.image.imageId)
-        
-            const newImage = await v2.uploader.upload(imgFile.tempFilePath)
-
-            await about.update({
-                $set: {
-                    title: title || about.title,
-                    description: description || about.description,
-                    image: {
-                        imageUrl: newImage.secure_url,
-                        imageId: newImage.public_id
+function updateAbout(id, payload, imgFile) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { title, description, Type } = (0, validator_1.updateAboutValidate)(payload);
+        try {
+            const about = yield about_model_1.default.findById(id);
+            if (!about)
+                throw new errors_1.notFoundError("about not found");
+            if (imgFile) {
+                yield cloudinary_1.v2.uploader.destroy(about.image.imageId);
+                const newImage = yield cloudinary_1.v2.uploader.upload(imgFile.tempFilePath);
+                yield about.update({
+                    $set: {
+                        title: title || about.title,
+                        description: description || about.description,
+                        image: {
+                            imageUrl: newImage.secure_url,
+                            imageId: newImage.public_id
+                        },
+                        Type: Type || about.Type
                     }
-
-                }
-            })
-
-            return "about updated successfully"
-
-        } else {
-
-            await about.update({
-                $set: {
-                    title: title || about.title,
-                    description: description || about.description
-
-                }
-            })
-            return "about updated successfully"
+                });
+                return "about updated successfully";
+            }
+            else {
+                yield about.update({
+                    $set: {
+                        title: title || about.title,
+                        description: description || about.description,
+                        Type: Type || about.Type
+                    }
+                });
+                return "about updated successfully";
+            }
         }
-
-       }catch(error) {
-            return error
-       }
+        catch (error) {
+            return error;
+        }
+    });
 }
-
-*/
+exports.updateAbout = updateAbout;
 //get about
-function getAbout(id) {
+function getAbout(id, type) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            return yield about_model_1.default.findById(id);
+            return yield about_model_1.default.findOne({ _id: id, Type: type });
         }
         catch (error) {
             return error;
@@ -289,10 +354,10 @@ function getAbout(id) {
 }
 exports.getAbout = getAbout;
 //get abouts
-function getAbouts() {
+function getAbouts(type) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            return yield about_model_1.default.find().sort({ _id: -1 });
+            return yield about_model_1.default.find({ Type: type }).sort({ _id: -1 });
         }
         catch (error) {
             return error;
@@ -349,12 +414,14 @@ function deleteContact(id) {
 }
 exports.deleteContact = deleteContact;
 //gallery
-function addImage(imgFile) {
+function addImage(imgFile, payload) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { name, title } = (0, validator_1.addImageValidate)(payload);
         try {
-            console.log("good");
             const image = yield cloudinary_1.v2.uploader.upload(imgFile.tempFilePath);
             return yield new gallery_model_1.default({
+                name,
+                title,
                 image: {
                     imageUrl: image.secure_url,
                     imageId: image.public_id
@@ -391,19 +458,28 @@ exports.addImage = addImage;
 // //     console.log("gallery", galleryArr)
 // //    return await Gallery.insertMany(galleryArr)
 // }
-function updateImage(imgId, imgFile) {
+function updateImage(imgId, imgFile, payload) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { name, title } = (0, validator_1.updateImageValidate)(payload);
         try {
             const img = yield gallery_model_1.default.findById(imgId);
             if (!img)
                 throw new errors_1.notFoundError("image not found");
-            yield cloudinary_1.v2.uploader.destroy(img.image.imageId);
-            const image = yield cloudinary_1.v2.uploader.upload(imgFile.tempFilePath);
+            let image;
+            if (imgFile) {
+                yield cloudinary_1.v2.uploader.destroy(img.image.imageId);
+                image = yield cloudinary_1.v2.uploader.upload(imgFile.tempFilePath);
+            }
             img.update({
                 $set: {
+                    name: name || img.name,
+                    title: title || img.title,
                     image: {
                         imageUrl: image.secure_url,
                         imageId: image.public_id
+                    } || {
+                        imageUrl: img.image.imageUrl,
+                        imageId: img.image.imageId
                     }
                 }
             });

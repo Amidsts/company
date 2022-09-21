@@ -13,7 +13,12 @@ const aboutSchema = new mongoose_1.Schema({
     image: {
         imageUrl: String,
         imageId: String
-    }
+    },
+    Type: {
+        type: String,
+        enum: ["carousel", "about", "news"]
+    },
+    date: String
 }, { timestamps: true });
 const About = (0, mongoose_1.model)("about", aboutSchema);
 exports.default = About;

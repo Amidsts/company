@@ -37,8 +37,9 @@ const config_1 = require("./utils/config");
 const admin_route_1 = __importDefault(require("./routes/admin.route"));
 const seed_1 = require("./utils/seed");
 const helpers_1 = require("./utils/helpers");
+const redis_1 = require("./utils/redis");
 const app = (0, express_1.default)();
-(0, mongoose_1.connect)(config_1.DBURL, {
+(0, mongoose_1.connect)(config_1.DBURI, {
     useUnifiedTopology: true,
     useNewUrlParser: true
 }).then(() => {
@@ -48,6 +49,7 @@ const app = (0, express_1.default)();
     .catch((err) => {
     console.log(err);
 });
+(0, redis_1.connectRedis)();
 app.use((0, cors_1.default)()) // allow server(e.g nodeJs), communicate with the client 
     .use((0, morgan_1.default)("tiny")) //log info about every http request
     .use((0, helmet_1.default)()) //helps to set http header

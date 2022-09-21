@@ -2,14 +2,14 @@ version: '3.7'
 
 services:
   mukef-apis:
-    container_name: backend
+    container_name: server
     build: ./
     command:  npm start
     working_dir: /user/src/app
     ports:
       - "6000:6000"
     environment:
-      - DBURI=mongodb://mongodb:27017/docker-node-module
+      - DBURI='mongodb://root:root@mongodb:27017/ameedat?retryWrites=true&w=majority&authSource=admin'
     networks:
       - mukef
     volumes:
@@ -22,6 +22,9 @@ services:
     image: mongo:latest
     networks:
       - mukef
+    environment:
+      - mongodb_username=root
+      - mongodb_password=root
     volumes:
       - ./:/user/src/app
     ports:
