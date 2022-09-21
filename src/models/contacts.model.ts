@@ -19,7 +19,7 @@ const contactSchema = new Schema({
         type: String,
         required: true
     }
-})
+}, {timestamps: true})
 
 const Contact = model<IContact>("contact", contactSchema)
 

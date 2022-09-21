@@ -7,7 +7,9 @@ export interface IAbout {
     image: {
         imageUrl: string,
         imageId: string
-    }
+    },
+    Type: "carousel" | "about" | "news",
+    date: Date
 }
 
 const aboutSchema = new Schema({
@@ -22,7 +24,12 @@ const aboutSchema = new Schema({
     image: {
         imageUrl: String,
         imageId: String
-    }
+    },
+    Type: {
+        type: String,
+        enum: [ "carousel", "about", "news" ]
+    },
+    date: String
 },  {timestamps: true})
 
 const About = model<IAbout>("about", aboutSchema)

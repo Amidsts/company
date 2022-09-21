@@ -19,7 +19,8 @@ import {
     forgotPasswordVerificationCode,
     resendpasswordverificationCode,
     enterPasswordVerificationCode,
-    resetPassword
+    resetPassword,
+    updateAbout
 } from "../services/adminService"
 import { expectationFailedError } from "../utils/errors"
 import { responseHandler } from "../utils/helpers"
@@ -97,10 +98,10 @@ export async function addAbout (req, res: Response, next: NextFunction) {
     }
 }
 
-export async function deleteabout (req: Request, res: Response, next: NextFunction) {
+export async function deleteabout (req, res: Response, next: NextFunction) {
     try{
 
-        const response = await deleteAbout(req.params.Id)
+        const response = await deleteAbout(req.params.Id, req.query.aboutType)
 
         res.json(responseHandler(response))
     } catch (err) {
@@ -108,7 +109,7 @@ export async function deleteabout (req: Request, res: Response, next: NextFuncti
         next(err)
     }
 }
-/*
+
 export async function updateabout (req, res: Response, next: NextFunction) {
     try{
 
@@ -116,7 +117,7 @@ export async function updateabout (req, res: Response, next: NextFunction) {
             const response = await updateAbout(req.params.aboutId, req.body)
             res.json(responseHandler(response))
         } else if ( !req.body ) {
-            const response = await updateAbout(req.params.aboutId, req.files.img)
+            const response = await updateAbout(req.params.aboutId, undefined, req.files.img)
             res.json(responseHandler(response))
         }
         
@@ -129,12 +130,11 @@ export async function updateabout (req, res: Response, next: NextFunction) {
     }
 }
 
-*/
 
 export async function getabout (req, res: Response, next: NextFunction) {
     try{
 
-        const response = await getAbout(req.params.aboutId)
+        const response = await getAbout(req.params.aboutId, req.query.aboutType)
         res.json(responseHandler(response))
     } catch (err) {
         res.json(err)
@@ -145,7 +145,7 @@ export async function getabout (req, res: Response, next: NextFunction) {
 export async function getabouts (req, res: Response, next: NextFunction) {
     try{
 
-        const response = await getAbouts()
+        const response = await getAbouts(req.query.aboutType)
         res.json(responseHandler(response))
     } catch (err) {
         res.json(err)
@@ -190,7 +190,7 @@ export async function getcontacts (req, res: Response, next: NextFunction) {
 
 export async function addimage(req, res: Response, next: NextFunction) {
     try{
-        const response = await addImage(req.files.img)
+        const response = await addImage(req.files.img, req.body)
 
         res.json(responseHandler(response))
     } catch (err) {
@@ -201,7 +201,7 @@ export async function addimage(req, res: Response, next: NextFunction) {
 
 export async function updateimage(req, res: Response, next: NextFunction) {
     try{
-        const response = await updateImage(req.params.imgId,req.files.img)
+        const response = await updateImage(req.params.imgId,req.files.img, req.body)
 
         res.json(responseHandler(response))
     } catch (err) { 

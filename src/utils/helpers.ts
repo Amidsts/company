@@ -92,3 +92,10 @@ export function generateVerificationCode () {
     return str
 }
 
+export function printDate () {
+    let month = ["January", "February", "March", "April","May", "June", "July", "August", "September", "October", "November", "December"]
+
+    let date = new Date()
+
+    return `${month[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`
+}

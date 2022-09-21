@@ -1,14 +1,18 @@
-import {Schema, model} from "mongoose"
+
+import {Schema, model, Types} from "mongoose"
 
 export interface IGallery{
+    name: string,
+    title: string,
     image: {
         imageUrl: string,
         imageId: string
-    },
-    imageCategory?: string
+    }
 }
 
 const gallerySchema = new Schema({
+    name: String,
+    title: String,
     image: {
         imageUrl: {
             type: String,
@@ -18,9 +22,6 @@ const gallerySchema = new Schema({
             type: String,
             required: true
         }
-    },
-    imageCategory: {
-        type: String
     }
 })
 

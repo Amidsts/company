@@ -5,7 +5,8 @@ dotenv.config()
 const {env} = process
 
 export const PORT: string | number = env.PORT || 6000
-export const DBURL: string = env.dburl || ""
+export const DBURI: string = env.dburi || ""
+export const DB_URI: string = env.db_uri || ""
 export const SEED_USER_FIRSTNAME: string = env.seed_user_firstname || ""
 
 export const SEED_USER_LASTNAME: string = env.seed_user_lastname || ""

@@ -6,7 +6,7 @@ import {connect} from "mongoose"
 import fileUpload from "express-fileupload"
 import path from "path"
 
-import { PORT, DBURL } from "./utils/config"
+import { PORT, DBURI, DB_URI } from "./utils/config"
 import adminRoutes from "./routes/admin.route"
 import { SEEDNOW } from "./utils/seed"
 import { cloudinary } from "./utils/helpers"
@@ -14,7 +14,7 @@ import {connectRedis} from "./utils/redis"
 
 const app = express()
 
-connect(DBURL, {
+connect(DBURI, {
     useUnifiedTopology: true,
     useNewUrlParser: true
 }).then( () => {

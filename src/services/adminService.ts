@@ -4,7 +4,7 @@ import {UploadResponseCallback, v2} from "cloudinary"
 import Admin, { IAdmin } from "../models/admin.model"
 import AccessAdmin from "../models/accessModel/adminaccess.model"
 import { authorizationError, badRequestError, expectationFailedError, notFoundError } from "../utils/errors"
-import { checkHash, generateToken, generateVerificationCode, hashPassword } from "../utils/helpers"
+import { checkHash, generateToken, generateVerificationCode, hashPassword, printDate } from "../utils/helpers"
 import {
     signUpAdminValidate,
     signInAdminValidate,
@@ -16,7 +16,9 @@ import {
     createContactValidate,
     createCarouseltValidate,
     forgotpasswordVerificatonValidate,
-    resetpasswordValidate
+    resetpasswordValidate,
+    addImageValidate,
+    updateImageValidate
 } from "../utils/validator"
 import Menu from "../models/menu.model"
 import About from "../models/about.model"
@@ -149,7 +151,9 @@ export async function forgotPasswordVerificationCode (payload: { [key: string]: 
 
         await SETEX(`adminVerificationCode_${verificationCode}`, verificationCode)
 
-        return verificationCode
+        return {
+            "verificationCode": verificationCode
+        }
     } catch(error) {
         return error
     }
@@ -162,7 +166,9 @@ export async function resendpasswordverificationCode () {
 
         await SETEX(`adminVerificationCode_${verificationCode}`, verificationCode)
 
-        return verificationCode
+        return {
+            "verificationCode": verificationCode
+        }
     } catch(error) {
         return error
     }
@@ -289,9 +295,10 @@ export async function createAbout (payload: {[key: string]: string}, imgfile: Up
 
     const { 
         title, 
-        description 
+        description,
+        Type
     } = createAboutValidate(payload)
-    
+    console.log( printDate() )
     try {
         const img = await v2.uploader.upload(imgfile.tempFilePath)
         if( !img ) throw new expectationFailedError("unable to upload image")
@@ -302,7 +309,9 @@ export async function createAbout (payload: {[key: string]: string}, imgfile: Up
             image: {
                 imageUrl: (await img).secure_url,
                 imageId: (await img).public_id
-            }
+            },
+            Type: Type,
+            date: printDate()
         }).save()
     }catch(error) {
         return error
@@ -311,9 +320,9 @@ export async function createAbout (payload: {[key: string]: string}, imgfile: Up
 }
 
 //delete about
-export async function deleteAbout(id: string) {
+export async function deleteAbout(id: string, type: string) {
    try {
-    const about = await About.findById({_id: id})
+    const about = await About.findOne({_id: id, Type: type })
 
     if (!about) throw new notFoundError("about not found") 
 
@@ -330,18 +339,17 @@ export async function deleteAbout(id: string) {
 }
 
 //update about
-/**export async function updateAbout(id:string, payload?: {[key: string]: string}, imgFile?: UploadedFile) {
+export async function updateAbout(id:string, payload?: {[key: string]: string}, imgFile?: UploadedFile) {
 
     const {
         title, 
-        description
+        description,
+        Type
     } = updateAboutValidate(payload)
     try {
         const about = await About.findById(id)
     
         if (!about) throw new notFoundError("about not found") 
-
-        console.log(title)
     
         if (imgFile) {
             await v2.uploader.destroy(about.image.imageId)
@@ -355,7 +363,8 @@ export async function deleteAbout(id: string) {
                     image: {
                         imageUrl: newImage.secure_url,
                         imageId: newImage.public_id
-                    }
+                    },
+                    Type: Type || about.Type
 
                 }
             })
@@ -367,8 +376,8 @@ export async function deleteAbout(id: string) {
             await about.update({
                 $set: {
                     title: title || about.title,
-                    description: description || about.description
-
+                    description: description || about.description,
+                    Type: Type || about.Type
                 }
             })
             return "about updated successfully"
@@ -379,13 +388,12 @@ export async function deleteAbout(id: string) {
        }
 }
 
-*/
 
 //get about
 
-export async function getAbout(id: string) {
+export async function getAbout(id: string, type: string) {
     try {
-        return await About.findById(id)
+        return await About.findOne({_id:id, Type: type })
     }catch(error) {
         return error
    }
@@ -394,9 +402,9 @@ export async function getAbout(id: string) {
 
 //get abouts
 
-export async function getAbouts() {
+export async function getAbouts(type: string) {
     try {
-        return await About.find().sort({_id: -1})
+        return await About.find({Type: type}).sort({_id: -1})
     }catch(error) {
         return error
    }
@@ -451,12 +459,16 @@ export async function deleteContact (id) {
 }
 
 //gallery
-export async function addImage (imgFile: UploadedFile) {
+export async function addImage (imgFile: UploadedFile, payload: {[key : string]: string}) {
+
+    const {name, title} = addImageValidate(payload)
     try {
-        console.log("good") 
+
         const image = await v2.uploader.upload(imgFile.tempFilePath)
         
         return await new Gallery({
+            name,
+            title,
             image: {
                 imageUrl: image.secure_url,
                 imageId: image.public_id
@@ -503,21 +515,31 @@ export async function addImage (imgFile: UploadedFile) {
 // //    return await Gallery.insertMany(galleryArr)
 // }
 
-export async function updateImage (imgId: string, imgFile: UploadedFile ) {
+export async function updateImage (imgId: string, imgFile: UploadedFile, payload: {[key: string]: string} ) {
+    const {name, title} = updateImageValidate(payload)
     try {
       const img = await Gallery.findById(imgId)
 
       if ( !img ) throw new notFoundError("image not found")
 
-      await v2.uploader.destroy(img.image.imageId)
+      let image ;
+      if ( imgFile ) {
+        await v2.uploader.destroy(img.image.imageId)
 
-      const image = await v2.uploader.upload(imgFile.tempFilePath)
+        image = await v2.uploader.upload(imgFile.tempFilePath)
+      }
+ 
 
       img.update({
         $set: {
+            name: name || img.name,
+            title: title || img.title,
             image: {
                 imageUrl: image.secure_url,
                 imageId: image.public_id
+            } || {
+                imageUrl: img.image.imageUrl,
+                imageId: img.image.imageId
             }
         }
       })
@@ -569,6 +591,7 @@ export async function getImages () {
 export async function createCarousel (carousel: {[key: string]: any }[], imagefile: UploadedFile) {
     try {
         const carouselExist =await Carousel.findOne()
+        
         createCarouseltValidate(carousel).length
 
         const image =await v2.uploader.upload(imagefile.tempFilePath)

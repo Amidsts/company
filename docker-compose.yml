@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  mukef-apis:
+    container_name: backend
+    build: ./
+    command:  npm start
+    working_dir: /user/src/app
+    ports:
+      - "6000:6000"
+    environment:
+      - DBURI=mongodb://mongodb:27017/docker-node-module
+    networks:
+      - mukef
+    volumes:
+      - ./:/user/src/app
+    depends_on:
+      - mongodb
+    
+  mongodb:
+    container_name: database
+    image: mongo:latest
+    networks:
+      - mukef
+    volumes:
+      - ./:/user/src/app
+    ports:
+      - "27017:27017"
+    
+volumes:
+  db_data:
+
+networks:
+  mukef:
+    driver: bridge

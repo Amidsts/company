@@ -66,7 +66,8 @@ export const updateMenuValidate = ( payload: {[key: string]: any} ) => {
 export const createAboutValidate = ( payload: {[key: string]: any} ) => {
     return validate( Joi.object({
         title: Joi.string().trim().required(),
-        description: Joi.string().trim().required()
+        description: Joi.string().trim().required(),
+        Type: Joi.string().valid("carousel", "about", "news" ).required()
     }),
     payload )
 }
@@ -74,7 +75,8 @@ export const createAboutValidate = ( payload: {[key: string]: any} ) => {
 export const updateAboutValidate = ( payload: {[key: string]: any} | undefined ) => {
     return validate( Joi.object({
         title: Joi.string().trim(),
-        description: Joi.string().trim()
+        description: Joi.string().trim(),
+        Type: Joi.string().valid("carousel", "about", "news" )
     }),
     payload )
 }
@@ -122,6 +124,25 @@ export const resetpasswordValidate = ( payload: {[key: string]: any} ) => {
         code: Joi.string().length(6).required(),
         password: Joi.string().trim().required(),
         repeatPassword: Joi.ref('password')
+    }),
+
+    payload)
+}
+
+//gallery
+export const addImageValidate = ( payload: {[key: string]: any} ) => {
+    return validate( Joi.object({
+        name: Joi.string().trim().required(),
+        title: Joi.string().trim().required()
+    }),
+
+    payload)
+}
+
+export const updateImageValidate = ( payload: {[key: string]: any} ) => {
+    return validate( Joi.object({
+        name: Joi.string().trim(),
+        title: Joi.string().trim()
     }),
 
     payload)
