@@ -6,19 +6,24 @@ import {connect} from "mongoose"
 import fileUpload from "express-fileupload"
 import path from "path"
 
-import { PORT, DBURI, DB_URI } from "./utils/config"
+import {
+     PORT, DBURI,
+     MONGODB_USER,
+     MONGODB_PASSWORD,
+     MONGODB_DATABASE
+} from "./utils/config"
 import adminRoutes from "./routes/admin.route"
 import { SEEDNOW } from "./utils/seed"
 import { cloudinary } from "./utils/helpers"
 import {connectRedis} from "./utils/redis"
 
 const app = express()
-
-connect(DBURI, {
+//'mongodb://MONGODB_USER:MONGODB_PASSWORD@mongodb:27017/MONGODB_DATABASE?retryWrites=true&w=majority&authSource=admin
+connect('mongodb://mongodb:27017/mukefapi', {
     useUnifiedTopology: true,
     useNewUrlParser: true
 }).then( () => {
-    console.log("connected to database successfully")
+    console.log("connected to database successfully") 
     SEEDNOW()
 })
 .catch( (err) => {

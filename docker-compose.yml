@@ -4,34 +4,37 @@ services:
   mukef-apis:
     container_name: server
     build: ./
-    command:  npm start
+    command: npm start
     working_dir: /user/src/app
     ports:
       - "6000:6000"
+    env_file: ./.env
     environment:
-      - DBURI='mongodb://root:root@mongodb:27017/ameedat?retryWrites=true&w=majority&authSource=admin'
-    networks:
-      - mukef
-    volumes:
-      - ./:/user/src/app
+      - DB_HOST=mongodb
+      - DB_USER=$mongodb_user
+      - DB_PASSWORD=$mongodb_password
+      - MONGODB_DATABASE=$mongodb_database
+    restart: unless-stopped
     depends_on:
       - mongodb
-    
+
   mongodb:
-    container_name: database
     image: mongo:latest
     networks:
       - mukef
-    environment:
-      - mongodb_username=root
-      - mongodb_password=root
-    volumes:
-      - ./:/user/src/app
+    restart: unless-stopped
     ports:
       - "27017:27017"
+    env_file: ./.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$mongodb_user
+      - MONGO_INITDB_ROOT_PASSWORD=$mongodb_password
+
+    volumes:
+      - db:/data/db
     
 volumes:
-  db_data:
+  db:
 
 networks:
   mukef:

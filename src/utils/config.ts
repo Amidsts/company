@@ -6,7 +6,6 @@ const {env} = process
 
 export const PORT: string | number = env.PORT || 6000
 export const DBURI: string = env.dburi || ""
-export const DB_URI: string = env.db_uri || ""
 export const SEED_USER_FIRSTNAME: string = env.seed_user_firstname || ""
 
 export const SEED_USER_LASTNAME: string = env.seed_user_lastname || ""
@@ -25,3 +24,7 @@ export const CLOUDINARY_NAME: string = env.cloudinary_name || ""
 export const CLOUDINARY_API_KEY: string = env.cloudinary_API_key || ""
 
 export const CLOUDINARY_API_SECRET: string = env.cloudinary_API_secret || ""
+
+export const MONGODB_USER: string = env.mongodb_user || ""
+export const MONGODB_PASSWORD: string = env.mongodb_password || ""
+export const MONGODB_DATABASE: string = env.mongodb_database || ""

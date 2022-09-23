@@ -6,6 +6,6 @@ WORKDIR /user/src/app
 
 COPY ./ /user/src/app
 
-RUN npm install && npm run build
+RUN npm install
 
-CMD ["/bin/bash"]
+CMD ["npm", "start"]
