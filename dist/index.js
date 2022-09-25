@@ -33,12 +33,15 @@ const helmet_1 = __importDefault(require("helmet"));
 const mongoose_1 = require("mongoose");
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const path_1 = __importDefault(require("path"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const config_1 = require("./utils/config");
 const admin_route_1 = __importDefault(require("./routes/admin.route"));
 const seed_1 = require("./utils/seed");
 const helpers_1 = require("./utils/helpers");
 const redis_1 = require("./utils/redis");
 const app = (0, express_1.default)();
+//'mongodb://MONGODB_USER:MONGODB_PASSWORD@mongodb:27017/MONGODB_DATABASE?retryWrites=true&w=majority&authSource=admin
 (0, mongoose_1.connect)(config_1.DBURI, {
     useUnifiedTopology: true,
     useNewUrlParser: true
@@ -60,7 +63,13 @@ app.use((0, cors_1.default)()) // allow server(e.g nodeJs), communicate with the
     tempFileDir: path_1.default.join(__dirname, "/uploads")
 }))
     .use("*", helpers_1.cloudinary);
+app.get("/mukef", (req, res) => {
+    res.send("welcome to mukef!");
+    res.end();
+});
 app.use("/vi/api", admin_route_1.default);
-app.listen(config_1.PORT, () => {
-    console.log(`server is up and running on port ${config_1.PORT}!`);
+const PORT = process.env.port || 8000;
+console.log(PORT);
+app.listen(PORT, () => {
+    console.log(`server is up and running on port ${PORT}!`);
 });

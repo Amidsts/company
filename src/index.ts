@@ -5,9 +5,11 @@ import helmet from "helmet"
 import {connect} from "mongoose"
 import fileUpload from "express-fileupload"
 import path from "path"
+import dotenv from "dotenv"
+dotenv.config()
 
 import {
-     PORT, DBURI,
+     DBURI,
      MONGODB_USER,
      MONGODB_PASSWORD,
      MONGODB_DATABASE
@@ -19,7 +21,7 @@ import {connectRedis} from "./utils/redis"
 
 const app = express()
 //'mongodb://MONGODB_USER:MONGODB_PASSWORD@mongodb:27017/MONGODB_DATABASE?retryWrites=true&w=majority&authSource=admin
-connect('mongodb://mongodb:27017/mukefapi', {
+connect(DBURI, {
     useUnifiedTopology: true,
     useNewUrlParser: true
 }).then( () => {
@@ -44,10 +46,14 @@ app.use( cors() ) // allow server(e.g nodeJs), communicate with the client
     .use( "*", cloudinary )
 
     
-
+app.get("/mukef", (req, res) => {
+    res.send("welcome to mukef!")
+    res.end()
+})
 app.use("/vi/api", adminRoutes)
    
-
+const PORT = process.env.port || 8000
+// console.log(PORT)
 app.listen(PORT, () => {
     console.log(`server is up and running on port ${PORT}!`)
 })

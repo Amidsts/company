@@ -4,7 +4,7 @@ import {connect, ConnectOptions} from "mongoose"
 dotenv.config()
 const {env} = process
 
-export const PORT: string | number = env.PORT || 6000
+// export const PORT: string | number = env.PORT || 6000
 export const DBURI: string = env.dburi || ""
 export const SEED_USER_FIRSTNAME: string = env.seed_user_firstname || ""
 
